@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Heading, Text } from "grommet";
-const fivePlayers = players => {
+const limit5Players = players => {
   const tempPlayers = [...players];
   return tempPlayers.slice(0, 5);
 };
@@ -17,10 +17,10 @@ const shiftPlayers = (players, eighth) => {
 };
 
 function Eighth({ players, eighth }) {
-  let eighthPlayers = shiftPlayers(players, eighth);
-  eighthPlayers = fivePlayers(eighthPlayers);
-
-  const goalie = eighthPlayers.shift();
+  const eighthPlayers = shiftPlayers(players, eighth);
+  const fivePlayers = limit5Players(eighthPlayers);
+  const outPlayers = players.filter(p => !fivePlayers.includes(p));
+  const goalie = fivePlayers.shift();
   return (
     <div>
       <Box
@@ -42,12 +42,23 @@ function Eighth({ players, eighth }) {
           <Heading level="2" margin="none">
             Other Players
           </Heading>
-          {eighthPlayers.map(player => (
+          {fivePlayers.map(player => (
             <Text size="large" margin="none" as="p" key={player}>
               {player}
             </Text>
           ))}
         </Box>
+      </Box>
+
+      <Box margin="medium" pad="medium" border={{ color: "accent-4", size: "large" }}>
+        <Heading level="2" margin="none">
+          Players Sitting Out
+        </Heading>
+        {outPlayers.map(player => (
+          <Text size="large" margin="none" as="p" key={player}>
+            {player}
+          </Text>
+        ))}
       </Box>
     </div>
   );

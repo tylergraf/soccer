@@ -8,8 +8,8 @@ import {
   Tab,
   Box,
   Heading,
-  TextArea,
-  Text
+  Text,
+  CheckBox
 } from "grommet";
 
 const theme = {
@@ -23,33 +23,46 @@ const theme = {
     }
   }
 };
+
+const possiblePlayers = [
+  "Truman",
+  "Kohen",
+  "Fisher",
+  "Robby",
+  "Nixon",
+  "Benjamin",
+  "Liam",
+  "Tage"
+];
+
 function App() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [players, setPlayers] = useState([]);
-  const [playersText, setPlayersText] = useState("");
   const [eighth, setEighth] = useState(1);
-
-  const handleInput = e => {
-    const val = e.target.value;
-    setPlayersText(val);
-    setPlayers(
-      val
-        .split(",")
-        .filter(Boolean)
-        .map(p => p.trim())
-    );
-    localStorage.players = val;
-  };
 
   useEffect(() => {
     const players = localStorage.players || "";
     const eighth = localStorage.eighth || 1;
     const activeIndex = localStorage.activeIndex || 1;
-    setPlayersText(players);
-    setPlayers(players.split(",").map(p => p.trim()));
+    setPlayers(
+      players
+        .split(",")
+        .map(p => p && p.trim())
+        .filter(Boolean)
+    );
     setEighth(Number(eighth));
     setActiveIndex(Number(activeIndex));
   }, []);
+  const toggleName = name => {
+    let tempPlayers = [];
+    if (players.includes(name)) {
+      tempPlayers = players.filter(p => p !== name);
+    } else {
+      tempPlayers = [name, ...players];
+    }
+    setPlayers(tempPlayers);
+    localStorage.players = tempPlayers;
+  };
   const handleClick = up => {
     let newEighth;
     if (up) {
@@ -80,11 +93,14 @@ function App() {
         <Tab title="Players" background="brand">
           <Box>
             <Box pad="medium">
-              <TextArea
-                defaultValue=""
-                value={playersText}
-                onChange={handleInput}
-              ></TextArea>
+              {possiblePlayers.map(name => (
+                <CheckBox
+                  key={name}
+                  label={name}
+                  checked={players.includes(name)}
+                  onChange={() => toggleName(name)}
+                ></CheckBox>
+              ))}
             </Box>
             <Box pad="medium" align="center">
               <Heading level="2" margin="none">
